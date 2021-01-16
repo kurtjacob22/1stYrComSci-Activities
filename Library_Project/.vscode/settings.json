@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "ostream": "cpp",
+        "xlocale": "cpp",
+        "xlocnum": "cpp",
+        "iosfwd": "cpp",
+        "iostream": "cpp",
+        "xstring": "cpp",
+        "string": "cpp",
+        "istream": "cpp",
+        "xiosbase": "cpp",
+        "fstream": "cpp",
+        "vector": "cpp"
+    }
+}
