@@ -14,7 +14,24 @@ struct Book{
     int borrower[];
     
     public:
-        void set_values(string, string, int, string, string);
+        // void set_values(string, string, int, string, string);
+
+        Book(){
+            bookName = "no name";
+            quantity == 0;
+            author = "";
+            bookGenre = "";
+            isbn = "";
+        }
+
+        Book(string bookName, string isbn, int quantity, string author, string bookGenre){
+            this -> bookName = bookName;
+            this -> isbn = isbn;
+            this -> quantity = quantity;
+            this -> author = author;
+            this -> bookGenre = bookGenre;
+        }
+
 
         string getBookName(){
             return bookName;
@@ -62,10 +79,10 @@ struct Book{
 
 };
 
-void Book::set_values(string book, string ref, int bookCount, string authorName, string genre){
-    bookName = book;
-    isbn = ref;
-    quantity = bookCount;
-    author = authorName;
-    bookGenre = genre;
-}
+// void Book::set_values(string book, string ref, int bookCount, string authorName, string genre){
+//     bookName = book;
+//     isbn = ref;
+//     quantity = bookCount;
+//     author = authorName;
+//     bookGenre = genre;
+// }

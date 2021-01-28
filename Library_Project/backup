@@ -1,13 +1,3 @@
-#include <iostream>
-#include <windows.h>
-#include <fstream>
-#include <vector> 
-#include <string>
-
-#include "./src/BookObject.cpp"
-
-using namespace std;
-
 int getScreenSize(){
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     int windowSize;
@@ -18,6 +8,8 @@ int getScreenSize(){
 
     return windowSize;
 }
+
+int windowSize = getScreenSize();
 
 void buffer(int bufferSize, string symbol){
     for(int j = 0; j<=bufferSize; j++){
@@ -40,7 +32,6 @@ void center(int bufferSize, string symbol, string text){// to have a more appeal
 }
 
 void menuOptions(){
-    int windowSize = getScreenSize();
     vector<string> options = {
         "1. Add Book",
         "2. Search Book",
@@ -60,44 +51,40 @@ void menuOptions(){
 
 } 
 
-void backToMenu(){
-    string bcktoMenu;
-    cout << "Press B to transact again, E to exit";
-    if(bcktoMenu == "B" || bcktoMenu == "b"){
-        menu();
-    }else if(bcktoMenu == "E" || bcktoMenu == "e"){
-        system("exit");
-    }else{
-        backToMenu();
-    }
-}
+
+
 
 void addBook(){
-    int windowSize = getScreenSize();
+    cin.clear();
+    cin.sync();
     string nameBook, authorName, genre, isbn;
     int qty;
     
     system("cls");
     center(windowSize/2, "-", "Add Book");
     cout << endl;
-    buffer(windowSize / 3, " ");
-    cout << "Enter Name of the Book: ";
-    getline(cin, nameBook);
+
     buffer(windowSize / 3, " ");
     cout << "Enter the ISBN of the Book: ";
     getline(cin, isbn);
+
+    buffer(windowSize / 3, " ");
+    cout << "Enter Name of the Book: ";
+    getline(cin, nameBook);
+
     buffer(windowSize / 3, " ");
     cout << "Enter Name of the Author: ";
     getline(cin, authorName);
+
     buffer(windowSize / 3, " ");
     cout << "Enter the Genre: ";
     getline(cin, genre);
+
     buffer(windowSize / 3, " ");
     cout << "Enter the Quantity: ";
     cin >> qty;
 
-    Book createBook;
-    createBook.set_values(nameBook, isbn, qty, authorName, genre);
+    Book createBook(nameBook, isbn, qty, authorName, genre);
 
     fstream file("./Database/" + nameBook + ".bin", ios::binary | ios::in | ios::out | ios::trunc);
     if(!file.is_open()){
@@ -117,10 +104,47 @@ void addBook(){
     backToMenu();
 }
 
+void printBooksDetails(string bookName){
+    fstream file("././Database/" + bookName + ".bin", ios::in | ios::out | ios::binary);
+    Book readBook;
+    file.seekg(0);
+    file.read((char *) &readBook, sizeof(Book));
+    cout << endl << readBook.bookName;
+    
+}
+
+void searchBook(){
+    cin.clear();
+    cin.sync();
+    string nameSearch, input;
+    vector<string> details;
+    system("cls");
+    center(windowSize/2, "-", "Search Book");
+    cout << endl;
+    cout << "Enter the name of a book: ";
+    getline(cin, nameSearch);
+
+    fstream file("././Database/listofbooks.txt", ios::in | ios::out);
+    while(getline(file, input)){
+        details.push_back(input);
+    }
+
+    for(string i : details){
+        transform(nameSearch.begin(), nameSearch.end(), nameSearch.begin(), ::tolower); 
+        transform(i.begin(), i.end(), i.begin(), ::tolower); 
+        if(nameSearch == i){
+            cout << "Found " << i << endl;
+            printBooksDetails(i);
+            break;
+        }
+    }
+
+}
+
 void menu(){
     system("cls");
     // system("color 70");
-    int windowSize = getScreenSize();
+    
 
     
     int pickMenu;
@@ -140,16 +164,11 @@ void menu(){
         if(pickMenu = 1){
             addBook();
             flag = false;
+        }else if(pickMenu == 2){
+            searchBook();
+            flag = false;
         }
     }
 }
 
-int main(){
-    system("cls");
-    // system("color 70");
-    // menu();   
 
-    //for debugging
-    addBook(); 
-
-}

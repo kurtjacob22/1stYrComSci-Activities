@@ -3,6 +3,8 @@
 #include <fstream>
 #include <vector> 
 #include <string>
+#include <algorithm>
+#include <cstring>
 
 #include "./BookObject.cpp"
 
@@ -44,73 +46,6 @@ class Choices{
             cout << endl;
         }
 
-
-
-
-        void menuOptions(){
-            vector<string> options = {
-                "1. Add Book",
-                "2. Search Book",
-                "3. Delete Book Record",
-                "4. Borrow Book",
-                "5. Return Book",
-                "6. View Record",
-                "7. Exit"
-            };
-            cout << endl;
-            center(windowSize/2, "-", "LIBRARY INVENTORY SYSTEM");
-            cout << endl;
-            for(string i : options){
-                buffer(windowSize / 2.3, " ");
-                cout << i << endl;
-            }
-
-        } 
-    
-        void addBook(){
-            string nameBook, authorName, genre, isbn;
-            int qty;
-            
-            system("cls");
-            center(windowSize/2, "-", "Add Book");
-            cout << endl;
-            buffer(windowSize / 3, " ");
-            cout << "Enter Name of the Book: ";
-            getline(cin, nameBook);
-            buffer(windowSize / 3, " ");
-            cout << "Enter the ISBN of the Book: ";
-            getline(cin, isbn);
-            buffer(windowSize / 3, " ");
-            cout << "Enter Name of the Author: ";
-            getline(cin, authorName);
-            buffer(windowSize / 3, " ");
-            cout << "Enter the Genre: ";
-            getline(cin, genre);
-            buffer(windowSize / 3, " ");
-            cout << "Enter the Quantity: ";
-            cin >> qty;
-
-            Book createBook;
-            createBook.set_values(nameBook, isbn, qty, authorName, genre);
-
-            fstream file("./Database/" + nameBook + ".bin", ios::binary | ios::in | ios::out | ios::trunc);
-            if(!file.is_open()){
-                cout << "error occured while opening the file";
-            }else{
-                file.write((char *) &createBook, sizeof(Book));
-            }
-
-            fstream writeBookName("./Database/listofbooks.txt", ios::in | ios::out | ios::app);
-            // getline(writeBookName, nameBook);
-            if(!writeBookName.is_open()){
-                cout << "error occured while opening the file2";
-            }else{
-                writeBookName << nameBook << endl;
-            }
-
-            backToMenu();
-        }
-
         void backToMenu(){
             string bcktoMenu;
             cout << endl;
@@ -122,26 +57,109 @@ class Choices{
             }else{
                 system("exit");
             }
+        }   
+
+
+        
+
+        
+
+        void printBooksDetails(string bookName){
+            fstream file("././Database/" + bookName + ".bin", ios::in | ios::out | ios::binary);
+            Book readBook;
+            file.seekg(0);
+            file.read((char *) &readBook, sizeof(Book));
+            cout << endl << readBook.bookName;
+
+            backToMenu();
             
         }
 
         void searchBook(){
+            cin.clear();
+            cin.sync();
             string nameSearch, input;
             vector<string> details;
+            system("cls");
+            center(windowSize/2, "-", "Search Book");
+            cout << endl;
             cout << "Enter the name of a book: ";
-            cin >> nameSearch;
+            getline(cin, nameSearch);
 
-            fstream file("././Database/listofbooks.txt", ios::in | ios::out);
+            fstream file("././Database/listofbooks.bin", ios::in | ios::out);
             while(getline(file, input)){
                 details.push_back(input);
             }
 
             for(string i : details){
+                transform(nameSearch.begin(), nameSearch.end(), nameSearch.begin(), ::tolower); 
+                transform(i.begin(), i.end(), i.begin(), ::tolower); 
                 if(nameSearch == i){
-                    cout << i;
-                    cout << "found";
+                    cout << "Found " << i << endl;
+                    printBooksDetails(i);
+                    break;
                 }
             }
+
+            cout << "no book found";
+            backToMenu();
+
+        }
+
+        void addBook(){
+            cin.clear();
+            cin.sync();
+            string nameBook, authorName, genre, isbn;
+            int qty;
+            
+            system("cls");
+            center(windowSize/2, "-", "Add Book");
+            cout << endl;
+
+            buffer(windowSize / 3, " ");
+            cout << "Enter the ISBN of the Book: ";
+            getline(cin, isbn);
+
+            buffer(windowSize / 3, " ");
+            cout << "Enter Name of the Book: ";
+            getline(cin, nameBook);
+
+            buffer(windowSize / 3, " ");
+            cout << "Enter Name of the Author: ";
+            getline(cin, authorName);
+
+            buffer(windowSize / 3, " ");
+            cout << "Enter the Genre: ";
+            getline(cin, genre);
+
+            buffer(windowSize / 3, " ");
+            cout << "Enter the Quantity: ";
+            cin >> qty;
+
+            Book createBook(nameBook, isbn, qty, authorName, genre);
+            // createBook.set_values(nameBook, isbn, qty, authorName, genre);
+            
+
+
+            fstream file("./Database/" + nameBook + ".bin", ios::binary | ios::in | ios::out | ios::trunc);
+            if(!file.is_open()){
+                cout << "error occured while opening the file";
+            }else{
+                file.write((char *) &createBook, sizeof(Book));
+            }
+
+            file.seekg(0);
+            Book readBook();
+
+            fstream writeBookName("./Database/listofbooks.txt", ios::in | ios::out | ios::app);
+            // getline(writeBookName, nameBook);
+            if(!writeBookName.is_open()){
+                cout << "error occured while opening the file2";
+            }else{
+                writeBookName << nameBook << endl;
+            }
+
+            // backToMenu();
         }
 
         void menu(){
@@ -164,11 +182,40 @@ class Choices{
 
             bool flag = true;
             while(flag){
-                if(pickMenu = 1){
+                if(pickMenu == 1){
                     addBook();
+                    flag = false;
+                }else if(pickMenu == 2){
+                    searchBook();
                     flag = false;
                 }
             }
         }
 
+        void menuOptions(){
+            vector<string> options = {
+                "1. Add Book",
+                "2. Search Book",
+                "3. Delete Book Record",
+                "4. Borrow Book",
+                "5. Return Book",
+                "6. View Record",
+                "7. Exit"
+            };
+            cout << endl;
+            center(windowSize/2, "-", "LIBRARY INVENTORY SYSTEM");
+            cout << endl;
+            for(string i : options){
+                buffer(windowSize / 2.3, " ");
+                cout << i << endl;
+            }
+
+        } 
+
+
 };
+
+
+
+
+
